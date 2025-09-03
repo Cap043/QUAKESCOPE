@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.7);
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+    background: rgba(75, 85, 99, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(75, 85, 99, 0.7);
+}
+
+/* Custom focus styles */
+.focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800;
+}
+
+/* Smooth transitions */
+.transition-all {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Professional Earthquake Markers */
+.professional-marker {
+    transition: all 0.2s ease-in-out;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.professional-marker:hover {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    transform: scale(1.1);
+}
+
+/* Professional Popup Styling */
+.professional-popup .leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: none;
+    padding: 0;
+}
+
+.professional-popup .leaflet-popup-content {
+    margin: 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.professional-popup .leaflet-popup-tip {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode popup adjustments */
+.dark .professional-popup .leaflet-popup-content-wrapper {
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(12px);
+}
+
+.dark .professional-popup .leaflet-popup-tip {
+    background: rgba(30, 41, 59, 0.95);
+}
+
+/* Selected Earthquake Marker */
+.selected-quake-marker {
+    z-index: 1000 !important;
+}
+
+.selected-quake-marker .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: .5;
+    }
+}
+
+/* World Wrap Support */
+.leaflet-container {
+    overflow: hidden;
+}
+
+.leaflet-tile-container {
+    overflow: visible;
+}
+
+.leaflet-tile {
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 640px) {
+    .leaflet-container {
+        padding-bottom: 80px; /* Space for bottom mobile controls */
+        height: calc(100vh - 80px) !important; /* Fixed height minus mobile controls */
+        overflow: hidden !important;
+    }
+    
+    .leaflet-popup {
+        max-width: 280px !important;
+    }
+    
+    .leaflet-popup-content {
+        font-size: 14px;
+    }
+}
+
+/* Map Container Height Fix */
+.leaflet-container {
+    height: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Fixed Map Container - Prevents overflow */
+.map-container-fixed {
+    position: relative !important;
+}
+
+/* Ensure controls are always on top */
+.leaflet-control-container {
+    z-index: 9999 !important;
+}
+
+/* Container overflow fix - Gentle approach */
+.leaflet-container {
+    overflow: hidden !important;
+}
+
+/* Map tile container - Allow horizontal wrapping */
+.leaflet-tile-container {
+    overflow: visible !important;
+}
+
+/* Map panes - Allow content flow */
+.leaflet-pane {
+    overflow: visible !important;
+}
+
+.leaflet-overlay-pane {
+    overflow: visible !important;
+}
+
+/* Ensure horizontal scrolling works */
+.leaflet-pane-container {
+    overflow: visible !important;
+}

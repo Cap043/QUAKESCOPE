@@ -3,6 +3,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { AppShell } from './components/AppShell';
 import { MapView } from './components/MapView';
 import { QuakeList } from './components/QuakeList';
+import { AnalyticsPage } from './components/AnalyticsPage';
 import { Loading, LoadingMap } from './components/Loading';
 import { ErrorState } from './components/ErrorState';
 import { useEarthquakes } from './hooks/useEarthquakes';
@@ -20,6 +21,9 @@ export default function App() {
     const [selectedQuakeId, setSelectedQuakeId] = useState<string | null>(null);
     const [hoveredQuakeId, setHoveredQuakeId] = useState<string | null>(null);
     const [mapFlyToCoords, setMapFlyToCoords] = useState<[number, number] | null>(null);
+    const [showHeatmap, setShowHeatmap] = useState(false);
+    const [showClustering, setShowClustering] = useState(false);
+    const [currentView, setCurrentView] = useState<'map' | 'analytics'>('map');
 
     // --- Data Fetching ---
     const { data: allQuakes, status, error, refetch, lastUpdated } = useEarthquakes(timeRange);
@@ -32,6 +36,9 @@ export default function App() {
 
     // --- Effects ---
     useEffect(() => {
+        // Set initial title immediately
+        document.title = 'QuakeScope – Earthquake Monitor';
+        
         // Ensure React is fully initialized before rendering the map
         const timer = setTimeout(() => setIsReady(true), 100);
         return () => clearTimeout(timer);
@@ -40,6 +47,42 @@ export default function App() {
     useEffect(() => {
         document.documentElement.classList.toggle('dark', isDarkMode);
     }, [isDarkMode]);
+
+    // Dynamic page title based on earthquake count and time range
+    useEffect(() => {
+        console.log('Title update effect triggered:', { 
+            filteredQuakes: filteredQuakes?.length, 
+            timeRange, 
+            minMag, 
+            status,
+            allQuakes: allQuakes?.length
+        });
+        
+        let newTitle = 'QuakeScope – Earthquake Monitor';
+        
+        if (status === 'loading') {
+            newTitle = 'QuakeScope – Loading...';
+        } else if (status === 'error') {
+            newTitle = 'QuakeScope – Error Loading Data';
+        } else if (filteredQuakes && filteredQuakes.length > 0) {
+            const count = filteredQuakes.length;
+            const timeRangeText = timeRange === 'hour' ? 'Hour' : timeRange === 'day' ? 'Today' : 'Week';
+            const magnitudeText = minMag > 0 ? ` (≥${minMag}M)` : '';
+            newTitle = `QuakeScope – ${count} Quakes ${timeRangeText}${magnitudeText}`;
+        } else if (allQuakes && allQuakes.length === 0) {
+            newTitle = 'QuakeScope – No Earthquakes Found';
+        }
+        
+        // Force update the title
+        document.title = newTitle;
+        console.log('Title set to:', newTitle);
+        
+        // Also try to trigger a title change event
+        const titleElement = document.querySelector('title');
+        if (titleElement) {
+            titleElement.textContent = newTitle;
+        }
+    }, [filteredQuakes, timeRange, minMag, status, allQuakes]);
     
     useEffect(() => {
         setSelectedQuakeId(null);
@@ -54,7 +97,48 @@ export default function App() {
         }
     }, []);
 
+    const handleToggleHeatmap = useCallback(() => {
+        setShowHeatmap(prev => !prev);
+    }, []);
+
+    const handleToggleClustering = useCallback(() => {
+        setShowClustering(prev => !prev);
+    }, []);
+
+    const handleViewAnalytics = useCallback(() => {
+        setCurrentView('analytics');
+    }, []);
+
+    const handleBackToMap = useCallback(() => {
+        setCurrentView('map');
+    }, []);
+
+    const handleViewOnMap = useCallback((quakeId: string, coords: [number, number]) => {
+        setSelectedQuakeId(quakeId);
+        setMapFlyToCoords(coords);
+        setCurrentView('map');
+        if (window.innerWidth < 640) {
+            setMobileView('map');
+        }
+    }, []);
+
+
     // --- Render ---
+    if (currentView === 'analytics') {
+        return (
+            <ErrorBoundary>
+                <AnalyticsPage
+                    quakes={filteredQuakes}
+                    timeRange={timeRange}
+                    isDarkMode={isDarkMode}
+                    onViewOnMap={handleViewOnMap}
+                    onBack={handleBackToMap}
+                    onThemeChange={setIsDarkMode}
+                />
+            </ErrorBoundary>
+        );
+    }
+
     return (
         <AppShell
             isDarkMode={isDarkMode}
@@ -67,6 +151,11 @@ export default function App() {
             setMobileView={setMobileView}
             quakes={filteredQuakes}
             lastUpdated={lastUpdated}
+            showHeatmap={showHeatmap}
+            showClustering={showClustering}
+            onToggleHeatmap={handleToggleHeatmap}
+            onToggleClustering={handleToggleClustering}
+            onViewAnalytics={handleViewAnalytics}
         >
             <ErrorBoundary>
                                 <div className="h-full w-full flex flex-col sm:flex-row overflow-hidden">
@@ -94,6 +183,13 @@ export default function App() {
                                     onLocationSearch={() => {
                                         // This will be handled by the LocationSearchHandler inside MapView
                                     }}
+                                    timeRange={timeRange}
+                                    minMag={minMag}
+                                    mobileView={mobileView}
+                                    showHeatmap={showHeatmap}
+                                    showClustering={showClustering}
+                                    onToggleHeatmap={handleToggleHeatmap}
+                                    onToggleClustering={handleToggleClustering}
                                 />
                             </ErrorBoundary>
                         ) : (

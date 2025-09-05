@@ -12,6 +12,10 @@ interface ControlsProps {
     setMobileView: (view: MobileView) => void;
     quakeCount: number;
     isDarkMode: boolean;
+    showHeatmap: boolean;
+    showClustering: boolean;
+    onToggleHeatmap: () => void;
+    onToggleClustering: () => void;
 }
 
 export const Controls: React.FC<ControlsProps> = ({
@@ -22,7 +26,11 @@ export const Controls: React.FC<ControlsProps> = ({
     mobileView,
     setMobileView,
     quakeCount,
-    isDarkMode
+    isDarkMode,
+    showHeatmap,
+    showClustering,
+    onToggleHeatmap,
+    onToggleClustering
 }) => {
     const timeRanges = [
         { id: 'hour' as TimeRange, label: 'Past Hour' },
@@ -49,9 +57,42 @@ export const Controls: React.FC<ControlsProps> = ({
                 ))}
             </div>
 
-            {/* City Search - Desktop Only */}
-            <div className="hidden sm:block w-64">
-                <CitySearch isDarkMode={isDarkMode} />
+            {/* City Search and Layer Controls - Desktop Only */}
+            <div className="hidden sm:flex items-center gap-3 w-64">
+                <div className="flex-grow">
+                    <CitySearch isDarkMode={isDarkMode} />
+                </div>
+                
+                {/* Layer Controls */}
+                <div className="flex items-center gap-2">
+                    {/* Heatmap Toggle */}
+                    <button
+                        onClick={onToggleHeatmap}
+                        className={`p-2 rounded-lg transition-all duration-200 ${
+                            showHeatmap
+                                ? 'bg-sky-500 text-white shadow-md'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                        }`}
+                        title="Toggle Heatmap"
+                    >
+                        <div className="w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-red-500"></div>
+                    </button>
+                    
+                    {/* Clustering Toggle */}
+                    <button
+                        onClick={onToggleClustering}
+                        className={`p-2 rounded-lg transition-all duration-200 ${
+                            showClustering
+                                ? 'bg-sky-500 text-white shadow-md'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                        }`}
+                        title="Toggle Clustering"
+                    >
+                        <div className="w-4 h-4 rounded-full bg-slate-400 flex items-center justify-center">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                    </button>
+                </div>
             </div>
 
             {/* Magnitude Scale */}

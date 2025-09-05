@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SunIcon, MoonIcon, MapPinIcon, ListIcon } from './Icons';
+import { SunIcon, MoonIcon, MapPinIcon, ListIcon, AnalyticsIcon } from './Icons';
 import { Controls } from './Controls';
 import { StatsBar } from './StatsBar';
 import { CitySearch } from './CitySearch';
@@ -16,6 +16,11 @@ interface AppShellProps {
     setMobileView: (view: MobileView) => void;
     quakes: Earthquake[] | null;
     lastUpdated: number | null;
+    showHeatmap: boolean;
+    showClustering: boolean;
+    onToggleHeatmap: () => void;
+    onToggleClustering: () => void;
+    onViewAnalytics?: () => void;
     children: React.ReactNode;
 }
 
@@ -30,6 +35,11 @@ export const AppShell: React.FC<AppShellProps> = ({
     setMobileView,
     quakes,
     lastUpdated,
+    showHeatmap,
+    showClustering,
+    onToggleHeatmap,
+    onToggleClustering,
+    onViewAnalytics,
     children
 }) => {
     const [isMobileSearchCollapsed, setIsMobileSearchCollapsed] = useState(true);
@@ -38,8 +48,14 @@ export const AppShell: React.FC<AppShellProps> = ({
             <header className="flex-shrink-0 bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg shadow-sm border-b border-slate-200 dark:border-slate-800 z-20">
                 <div className="max-w-screen-2xl mx-auto py-3">
                     <div className="flex items-center justify-between px-4 sm:px-6">
-                        <h1 className="text-xl font-bold tracking-tight text-sky-600 dark:text-sky-400">
-                            QuakeScope
+                        <h1 className="text-xl font-bold tracking-tight flex items-center">
+                            <span className="bg-gradient-to-r from-sky-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient-x">
+                                QuakeScope
+                            </span>
+                            {/* <span className="ml-2 text-base font-semibold text-sky-600 dark:text-sky-400">
+                                – {quakes?.length || 0} Quakes {timeRange === 'hour' ? 'Hour' : timeRange === 'day' ? 'Today' : 'Week'}
+                                {minMag > 0 && ` (≥${minMag}M)`}
+                            </span> */}
                         </h1>
                         <div className="flex items-center gap-2">
                             {/* Mobile Search - Top Right */}
@@ -51,15 +67,27 @@ export const AppShell: React.FC<AppShellProps> = ({
                                     onToggleCollapse={() => setIsMobileSearchCollapsed(!isMobileSearchCollapsed)}
                                 />
                             </div>
-                            <button 
-                                onClick={() => setIsDarkMode(!isDarkMode)} 
-                                className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-                            >
-                                {isDarkMode ? 
-                                    <SunIcon className="w-5 h-5 text-yellow-400" /> : 
-                                    <MoonIcon className="w-5 h-5 text-slate-600" />
-                                }
-                            </button>
+                            
+                            {/* Analytics Button */}
+                            {onViewAnalytics && (
+                                <button 
+                                    onClick={onViewAnalytics}
+                                    className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors group"
+                                    title="View Analytics"
+                                >
+                                    <AnalyticsIcon className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-blue-500 dark:group-hover:text-blue-400" />
+                                </button>
+                            )}
+                            
+                        <button 
+                            onClick={() => setIsDarkMode(!isDarkMode)} 
+                            className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                        >
+                            {isDarkMode ? 
+                                <SunIcon className="w-5 h-5 text-yellow-400" /> : 
+                                <MoonIcon className="w-5 h-5 text-slate-600" />
+                            }
+                        </button>
                         </div>
                     </div>
                     
@@ -74,12 +102,16 @@ export const AppShell: React.FC<AppShellProps> = ({
                             setMobileView={setMobileView}
                             quakeCount={quakes?.length || 0}
                             isDarkMode={isDarkMode}
+                            showHeatmap={showHeatmap}
+                            showClustering={showClustering}
+                            onToggleHeatmap={onToggleHeatmap}
+                            onToggleClustering={onToggleClustering}
                         />
                     </div>
                     
-
+                    
                     <div className="mt-3 border-t border-slate-200 dark:border-slate-800 pt-2">
-                        <StatsBar quakes={quakes} lastUpdated={lastUpdated} />
+                        <StatsBar quakes={quakes} lastUpdated={lastUpdated} timeRange={timeRange} isDarkMode={isDarkMode} />
                     </div>
                 </div>
             </header>

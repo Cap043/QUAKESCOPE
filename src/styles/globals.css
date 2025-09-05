@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Leaflet MarkerCluster styles */
+@import 'leaflet.markercluster/dist/MarkerCluster.css';
+@import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+
 /* Custom scrollbar styles */
 ::-webkit-scrollbar {
     width: 6px;
@@ -43,6 +47,22 @@
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Rotating gradient animation */
+@keyframes gradient-x {
+    0%, 100% {
+        background-size: 200% 200%;
+        background-position: left center;
+    }
+    50% {
+        background-size: 200% 200%;
+        background-position: right center;
+    }
+}
+
+.animate-gradient-x {
+    animation: gradient-x 3s ease infinite;
 }
 
 .animate-fade-in {
@@ -563,4 +583,72 @@
     background: #0284c7;
     transform: scale(1.1);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom Marker Cluster Styles */
+.marker-cluster-small {
+    background-color: rgba(34, 197, 94, 0.6);
+    border: 2px solid rgba(34, 197, 94, 0.8);
+}
+
+.marker-cluster-medium {
+    background-color: rgba(251, 146, 60, 0.6);
+    border: 2px solid rgba(251, 146, 60, 0.8);
+}
+
+.marker-cluster-large {
+    background-color: rgba(239, 68, 68, 0.6);
+    border: 2px solid rgba(239, 68, 68, 0.8);
+}
+
+.marker-cluster div {
+    background-color: transparent;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    line-height: 36px;
+}
+
+/* Custom Popup Styles */
+.custom-popup .leaflet-popup-content-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.dark .custom-popup .leaflet-popup-content-wrapper {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+}
+
+.custom-popup .leaflet-popup-content {
+    margin: 8px;
+    font-size: 12px;
+}
+
+.custom-popup .leaflet-popup-tip {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.dark .custom-popup .leaflet-popup-tip {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+}
+
+/* Trend Graph Styles */
+.trend-graph {
+    min-width: 120px;
+}
+
+.trend-graph svg {
+    border-radius: 4px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.dark .trend-graph svg {
+    border: 1px solid rgba(71, 85, 105, 0.3);
 }

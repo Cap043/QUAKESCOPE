@@ -4,10 +4,18 @@ import L from 'leaflet';
 import { Settings, ZoomIn, ZoomOut, MousePointer, Ruler } from './Icons';
 
 interface MapControlsProps {
-    isDarkMode: boolean;
+    showHeatmap?: boolean;
+    showClustering?: boolean;
+    onToggleHeatmap?: () => void;
+    onToggleClustering?: () => void;
 }
 
-export const MapControls: React.FC<MapControlsProps> = ({ isDarkMode }) => {
+export const MapControls: React.FC<MapControlsProps> = ({
+    showHeatmap = false,
+    showClustering = false,
+    onToggleHeatmap,
+    onToggleClustering
+}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [scrollWheelZoom, setScrollWheelZoom] = useState(true);
     const [showScale, setShowScale] = useState(false);
@@ -81,8 +89,8 @@ export const MapControls: React.FC<MapControlsProps> = ({ isDarkMode }) => {
 
     return (
         <div className="absolute top-4 right-4 z-[9999] flex flex-col gap-2">
-            {/* Zoom Controls */}
-            <div className="flex flex-col gap-1">
+            {/* Zoom Controls - Desktop Only */}
+            <div className="hidden sm:flex flex-col gap-1">
                 <button
                     onClick={zoomIn}
                     className="w-10 h-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 transition-colors flex items-center justify-center"
@@ -161,6 +169,65 @@ export const MapControls: React.FC<MapControlsProps> = ({ isDarkMode }) => {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Layer Controls - Mobile Only */}
+                        {onToggleHeatmap && onToggleClustering && (
+                            <>
+                                <div className="px-3 py-2 border-t border-slate-200 dark:border-slate-700">
+                                    <h4 className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Map Layers</h4>
+                                </div>
+                                
+                                {/* Heatmap Toggle */}
+                                <div className="px-3 py-2">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-red-500"></div>
+                                            <span className="text-sm text-slate-700 dark:text-slate-300">Heatmap</span>
+                                        </div>
+                                        <button
+                                            onClick={onToggleHeatmap}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 ${
+                                                showHeatmap 
+                                                    ? 'bg-sky-600' 
+                                                    : 'bg-slate-300 dark:bg-slate-600'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                    showHeatmap ? 'translate-x-6' : 'translate-x-1'
+                                                }`}
+                                            />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Clustering Toggle */}
+                                <div className="px-3 py-2">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3 rounded-full bg-slate-400 flex items-center justify-center">
+                                                <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                                            </div>
+                                            <span className="text-sm text-slate-700 dark:text-slate-300">Clustering</span>
+                                        </div>
+                                        <button
+                                            onClick={onToggleClustering}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 ${
+                                                showClustering 
+                                                    ? 'bg-sky-600' 
+                                                    : 'bg-slate-300 dark:bg-slate-600'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                    showClustering ? 'translate-x-6' : 'translate-x-1'
+                                                }`}
+                                            />
+                                        </button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
 
                         <div className="px-3 py-2 border-t border-slate-200 dark:border-slate-700">
                             <button

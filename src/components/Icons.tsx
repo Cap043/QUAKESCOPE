@@ -128,3 +128,18 @@ export const Ruler: React.FC<IconProps> = ({ className }) => (
         <path d="M8 18h4" />
     </svg>
 );
+
+export const AnalyticsIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 3v18h18" />
+        <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+    </svg>
+);
+
+export const BarChartIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" x2="12" y1="20" y2="10" />
+        <line x1="18" x2="18" y1="20" y2="4" />
+        <line x1="6" x2="6" y1="20" y2="16" />
+    </svg>
+);

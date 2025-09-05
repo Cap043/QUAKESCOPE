@@ -6,8 +6,12 @@ import { Legend } from './Legend';
 import { MapControls } from './MapControls';
 import { MapThemeSelector } from './MapThemeSelector';
 import { WorldWrapHandler } from './WorldWrapHandler';
+import { HeatmapLayer } from './HeatmapLayer';
+import { MarkerCluster } from './MarkerCluster';
+import { ShareButton } from './ShareButton';
 import { MapIcon } from './Icons';
 import { Earthquake } from '../lib/types';
+import { generateShareableUrl } from '../lib/urlSharing';
 
 export interface MapTheme {
     id: string;
@@ -27,6 +31,13 @@ interface MapViewProps {
     onQuakeSelect: (quakeId: string, coords: [number, number]) => void;
     onQuakeHover: (quakeId: string | null) => void;
     onLocationSearch?: (lat: number, lon: number) => void;
+    timeRange: 'hour' | 'day' | 'week';
+    minMag: number;
+    mobileView: 'map' | 'list';
+    showHeatmap: boolean;
+    showClustering: boolean;
+    onToggleHeatmap: () => void;
+    onToggleClustering: () => void;
 }
 
 // Component to handle map fly-to functionality
@@ -112,7 +123,14 @@ export const MapView: React.FC<MapViewProps> = ({
     isDarkMode,
     onQuakeSelect,
     onQuakeHover,
-    onLocationSearch
+    onLocationSearch,
+    timeRange,
+    minMag,
+    mobileView,
+    showHeatmap,
+    showClustering,
+    onToggleHeatmap,
+    onToggleClustering
 }) => {
     const [currentTheme, setCurrentTheme] = useState<MapTheme>({
         id: 'streets',
@@ -217,18 +235,50 @@ export const MapView: React.FC<MapViewProps> = ({
             <LocationSearchHandler onLocationSearch={onLocationSearch} />
             <MapResetHandler />
             
-            <QuakeMarkers
-                quakes={quakes}
-                hoveredQuakeId={hoveredQuakeId}
-                selectedQuakeId={selectedQuakeId}
-                isDarkMode={isDarkMode}
-                onQuakeSelect={onQuakeSelect}
-                onQuakeHover={onQuakeHover}
+            {/* Heatmap Layer */}
+            <HeatmapLayer
+                quakes={quakes.map(quake => ({
+                    lat: quake.lat,
+                    lon: quake.lon,
+                    magnitude: quake.mag || 0,
+                    depth: quake.depthKm
+                }))}
+                isVisible={showHeatmap}
+                intensity={1.2}
+                radius={35}
+                blur={20}
+                maxZoom={18}
             />
+            
+            {/* Marker Clustering */}
+            {showClustering ? (
+                <MarkerCluster
+                    quakes={quakes}
+                    isVisible={showClustering}
+                    onQuakeSelect={(quake) => onQuakeSelect(quake.id, [quake.lat, quake.lon])}
+                    onQuakeHover={onQuakeHover}
+                    selectedQuakeId={selectedQuakeId}
+                    hoveredQuakeId={hoveredQuakeId}
+                />
+            ) : (
+                <QuakeMarkers
+                    quakes={quakes}
+                    hoveredQuakeId={hoveredQuakeId}
+                    selectedQuakeId={selectedQuakeId}
+                    isDarkMode={isDarkMode}
+                    onQuakeSelect={onQuakeSelect}
+                    onQuakeHover={onQuakeHover}
+                />
+            )}
             
             <FlyToMarker position={mapFlyToCoords} zoom={isMobile ? 10 : 10} />
             <Legend />
-            <MapControls isDarkMode={isDarkMode} />
+            <MapControls 
+                showHeatmap={showHeatmap}
+                showClustering={showClustering}
+                onToggleHeatmap={onToggleHeatmap}
+                onToggleClustering={onToggleClustering}
+            />
             </MapContainer>
             
             {/* Theme Selector positioned absolutely over the map */}
@@ -237,6 +287,22 @@ export const MapView: React.FC<MapViewProps> = ({
                     isDarkMode={isDarkMode}
                     onThemeChange={handleThemeChange}
                     currentTheme={currentTheme}
+                />
+            </div>
+
+
+            {/* Share Button */}
+            <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-[1000]">
+                <ShareButton
+                    onGenerateUrl={() => generateShareableUrl({
+                        timeRange,
+                        minMag,
+                        isDarkMode,
+                        mobileView,
+                        showHeatmap,
+                        showClustering
+                    })}
+                    isDarkMode={isDarkMode}
                 />
             </div>
         </div>

@@ -1,13 +1,16 @@
 import React, { useMemo } from 'react';
 import { Earthquake } from '../lib/types';
 import { formatRelativeTime } from '../lib/format';
+import { TrendGraph } from './TrendGraph';
 
 interface StatsBarProps {
     quakes: Earthquake[] | null;
     lastUpdated: number | null;
+    timeRange: 'hour' | 'day' | 'week';
+    isDarkMode: boolean;
 }
 
-export const StatsBar: React.FC<StatsBarProps> = ({ quakes, lastUpdated }) => {
+export const StatsBar: React.FC<StatsBarProps> = ({ quakes, lastUpdated, timeRange, isDarkMode }) => {
     const stats = useMemo(() => {
         if (!quakes || quakes.length === 0) {
             return { total: 0, strongest: 'N/A', avgMag: 'N/A' };
@@ -32,11 +35,19 @@ export const StatsBar: React.FC<StatsBarProps> = ({ quakes, lastUpdated }) => {
                 <p><strong>Strongest:</strong> <span className="font-mono">{stats.strongest}</span> M</p>
                 <p><strong>Average:</strong> <span className="font-mono">{stats.avgMag}</span> M</p>
             </div>
-            {lastUpdated && (
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Updated: {formatRelativeTime(lastUpdated)}
-                </p>
-            )}
+            <div className="flex items-center gap-4">
+                <TrendGraph 
+                    quakes={quakes || []} 
+                    timeRange={timeRange} 
+                    isDarkMode={isDarkMode}
+                    className="hidden sm:block"
+                />
+                {lastUpdated && (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Updated: {formatRelativeTime(lastUpdated)}
+                    </p>
+                )}
+            </div>
         </div>
     );
 };

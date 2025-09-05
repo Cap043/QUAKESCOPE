@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import L from 'leaflet';
 import { QuakeMarkers } from './QuakeMarkers';
 import { Legend } from './Legend';
 import { MapControls } from './MapControls';
@@ -25,6 +26,7 @@ interface MapViewProps {
     isDarkMode: boolean;
     onQuakeSelect: (quakeId: string, coords: [number, number]) => void;
     onQuakeHover: (quakeId: string | null) => void;
+    onLocationSearch?: (lat: number, lon: number) => void;
 }
 
 // Component to handle map fly-to functionality
@@ -47,6 +49,61 @@ const FlyToMarker: React.FC<{ position: [number, number] | null; zoom: number }>
     return null;
 };
 
+// Component to handle location search from outside the map context
+const LocationSearchHandler: React.FC<{ onLocationSearch?: (lat: number, lon: number) => void }> = ({ onLocationSearch }) => {
+    const map = useMap();
+    const [searchMarker, setSearchMarker] = useState<L.Marker | null>(null);
+    
+    useEffect(() => {
+        if (onLocationSearch) {
+            // Store the callback in a way that can be accessed from outside
+            (window as any).__mapLocationSearch = (lat: number, lon: number) => {
+                if (map) {
+                    // Remove existing search marker
+                    if (searchMarker) {
+                        map.removeLayer(searchMarker);
+                    }
+                    
+                    // Create new search marker
+                    const marker = L.marker([lat, lon], {
+                        icon: L.divIcon({
+                            className: 'search-location-marker',
+                            html: `
+                                <div class="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full border-4 border-white shadow-lg">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                            `,
+                            iconSize: [32, 32],
+                            iconAnchor: [16, 16]
+                        })
+                    });
+                    
+                    // Add marker to map
+                    marker.addTo(map);
+                    setSearchMarker(marker);
+                    
+                    // Fly to location
+                    map.flyTo([lat, lon], 10, {
+                        animate: true,
+                        duration: 1.5
+                    });
+                }
+            };
+        }
+        
+        return () => {
+            delete (window as any).__mapLocationSearch;
+            if (searchMarker) {
+                map.removeLayer(searchMarker);
+            }
+        };
+    }, [map, onLocationSearch, searchMarker]);
+    
+    return null;
+};
+
 export const MapView: React.FC<MapViewProps> = ({
     quakes,
     hoveredQuakeId,
@@ -54,7 +111,8 @@ export const MapView: React.FC<MapViewProps> = ({
     mapFlyToCoords,
     isDarkMode,
     onQuakeSelect,
-    onQuakeHover
+    onQuakeHover,
+    onLocationSearch
 }) => {
     const [currentTheme, setCurrentTheme] = useState<MapTheme>({
         id: 'streets',
@@ -136,10 +194,10 @@ export const MapView: React.FC<MapViewProps> = ({
         <div className="relative h-full w-full">
                                        <MapContainer
                         center={[20, 0]}
-                        zoom={isMobile ? 1 : 2}
+                        zoom={isMobile ? 2 : 2}
                         scrollWheelZoom={true}
                         style={{ height: '100%', width: '100%', backgroundColor: isDarkMode ? '#0f172a' : '#f1f5f9' }}
-                        minZoom={isMobile ? 1 : 2}
+                        minZoom={isMobile ? 2 : 2}
                         maxZoom={18}
                         key={`map-container-${currentTheme.id}-${isMobile ? 'mobile' : 'desktop'}`}
                         zoomControl={false}
@@ -156,6 +214,8 @@ export const MapView: React.FC<MapViewProps> = ({
             />
             
             <WorldWrapHandler />
+            <LocationSearchHandler onLocationSearch={onLocationSearch} />
+            <MapResetHandler />
             
             <QuakeMarkers
                 quakes={quakes}
@@ -166,7 +226,7 @@ export const MapView: React.FC<MapViewProps> = ({
                 onQuakeHover={onQuakeHover}
             />
             
-            <FlyToMarker position={mapFlyToCoords} zoom={isMobile ? 8 : 10} />
+            <FlyToMarker position={mapFlyToCoords} zoom={isMobile ? 10 : 10} />
             <Legend />
             <MapControls isDarkMode={isDarkMode} />
             </MapContainer>
@@ -181,4 +241,29 @@ export const MapView: React.FC<MapViewProps> = ({
             </div>
         </div>
     );
+};
+
+// Map Reset Handler - Provides global reset functionality
+const MapResetHandler: React.FC = () => {
+    const map = useMap();
+
+    useEffect(() => {
+        if (map) {
+            // Expose global reset function
+            (window as any).__mapReset = () => {
+                // Reset to global view focusing on high earthquake regions
+                // Pacific Ring of Fire and other seismically active areas
+                map.flyTo([20, 0], 2, { 
+                    animate: true, 
+                    duration: 2.0 
+                });
+            };
+        }
+        
+        return () => {
+            delete (window as any).__mapReset;
+        };
+    }, [map]);
+
+    return null;
 };

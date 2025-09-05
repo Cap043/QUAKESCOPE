@@ -1,6 +1,7 @@
 import React from 'react';
 import { TimeRange, MobileView } from '../lib/types';
 import { MapPinIcon, ListIcon } from './Icons';
+import { CitySearch } from './CitySearch';
 
 interface ControlsProps {
     timeRange: TimeRange;
@@ -10,6 +11,7 @@ interface ControlsProps {
     mobileView: MobileView;
     setMobileView: (view: MobileView) => void;
     quakeCount: number;
+    isDarkMode: boolean;
 }
 
 export const Controls: React.FC<ControlsProps> = ({
@@ -19,7 +21,8 @@ export const Controls: React.FC<ControlsProps> = ({
     setMinMag,
     mobileView,
     setMobileView,
-    quakeCount
+    quakeCount,
+    isDarkMode
 }) => {
     const timeRanges = [
         { id: 'hour' as TimeRange, label: 'Past Hour' },
@@ -29,6 +32,7 @@ export const Controls: React.FC<ControlsProps> = ({
 
     return (
         <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-2 sm:px-6">
+            {/* Time Range Selector */}
             <div className="flex items-center gap-1 sm:gap-2 p-1 bg-slate-200 dark:bg-slate-700 rounded-full">
                 {timeRanges.map(range => (
                     <button
@@ -45,6 +49,12 @@ export const Controls: React.FC<ControlsProps> = ({
                 ))}
             </div>
 
+            {/* City Search - Desktop Only */}
+            <div className="hidden sm:block w-64">
+                <CitySearch isDarkMode={isDarkMode} />
+            </div>
+
+            {/* Magnitude Scale */}
             <div className="w-full sm:w-auto flex items-center gap-2 sm:gap-3">
                 <label htmlFor="minMag" className="text-xs sm:text-sm font-semibold whitespace-nowrap">Min. Mag:</label>
                 <div className="flex-grow flex items-center gap-2">
@@ -64,30 +74,34 @@ export const Controls: React.FC<ControlsProps> = ({
                 </div>
             </div>
 
-            <div className="sm:hidden flex items-center gap-2 p-1 bg-slate-200 dark:bg-slate-700 rounded-full">
-                <button 
-                    onClick={() => setMobileView('map')} 
-                    className={`p-2 rounded-full transition-colors ${
-                        mobileView === 'map' 
-                            ? 'bg-white dark:bg-slate-900 text-sky-600 shadow-sm' 
-                            : ''
-                    }`}
-                >
-                    <MapPinIcon className="w-5 h-5" />
-                </button>
-                <button 
-                    onClick={() => setMobileView('list')} 
-                    className={`p-2 rounded-full transition-colors relative ${
-                        mobileView === 'list' 
-                            ? 'bg-white dark:bg-slate-900 text-sky-600 shadow-sm' 
-                            : ''
-                    }`}
-                >
-                    <ListIcon className="w-5 h-5" />
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-sky-500 text-white text-[10px] font-bold">
-                        {quakeCount}
-                    </span>
-                </button>
+            {/* Mobile Controls */}
+            <div className="sm:hidden flex items-center justify-center">
+                {/* Map/List Toggle */}
+                <div className="flex items-center gap-2 p-1 bg-slate-200 dark:bg-slate-700 rounded-full">
+                    <button 
+                        onClick={() => setMobileView('map')} 
+                        className={`p-2 rounded-full transition-colors ${
+                            mobileView === 'map' 
+                                ? 'bg-white dark:bg-slate-900 text-sky-600 shadow-sm' 
+                                : ''
+                        }`}
+                    >
+                        <MapPinIcon className="w-5 h-5" />
+                    </button>
+                    <button 
+                        onClick={() => setMobileView('list')} 
+                        className={`p-2 rounded-full transition-colors relative ${
+                            mobileView === 'list' 
+                                ? 'bg-white dark:bg-slate-900 text-sky-600 shadow-sm' 
+                                : ''
+                        }`}
+                    >
+                        <ListIcon className="w-5 h-5" />
+                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-sky-500 text-white text-[10px] font-bold">
+                            {quakeCount}
+                        </span>
+                    </button>
+                </div>
             </div>
         </div>
     );

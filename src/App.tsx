@@ -80,7 +80,7 @@ export default function App() {
                         />
                     </div>
 
-                    <div className={`flex-grow h-full ${mobileView === 'map' ? 'block' : 'hidden'} sm:block pb-20 sm:pb-0`}>
+                    <div className={`flex-grow h-full ${mobileView === 'map' ? 'block' : 'hidden'} sm:block pb-28 sm:pb-0`}>
                         {typeof window !== 'undefined' && isReady ? (
                             <ErrorBoundary>
                                 <MapView
@@ -91,6 +91,9 @@ export default function App() {
                                     isDarkMode={isDarkMode}
                                     onQuakeSelect={handleQuakeSelect}
                                     onQuakeHover={setHoveredQuakeId}
+                                    onLocationSearch={() => {
+                                        // This will be handled by the LocationSearchHandler inside MapView
+                                    }}
                                 />
                             </ErrorBoundary>
                         ) : (

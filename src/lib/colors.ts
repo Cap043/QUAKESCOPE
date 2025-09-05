@@ -6,7 +6,7 @@ export const getMagnitudeColor = (mag: number | null): string => {
     return 'text-red-500 bg-red-500/10 border-red-500/30'; // Strong
 };
 
-export const getMagnitudeMarkerOptions = (mag: number | null) => {
+export const getMagnitudeMarkerOptions = (mag: number | null, isDarkMode: boolean = false) => {
     let color: string, weight: number, opacity: number;
     const magnitude = mag || 0;
     
@@ -28,12 +28,15 @@ export const getMagnitudeMarkerOptions = (mag: number | null) => {
         opacity = 0.9; 
     }
 
+    // White border for both light and dark modes
+    const borderColor = '#ffffff';
+
     return {
         radius: 2 + Math.pow(magnitude, 1.5),
         fillColor: color,
-        color: color,
-        weight: weight,
-        opacity: opacity,
+        color: borderColor, // Use theme-aware border color
+        weight: weight + 1, // Increase weight for better border visibility
+        opacity: 1, // Full opacity for borders
         fillOpacity: 0.5
     };
 };

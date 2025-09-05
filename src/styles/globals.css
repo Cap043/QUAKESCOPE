@@ -60,32 +60,183 @@
     transform: scale(1.1);
 }
 
+/* Enhanced popup content styling */
+.professional-popup .leaflet-popup-content-wrapper {
+    min-width: 200px;
+    max-width: 250px;
+}
+
+/* Popup animations */
+.professional-popup {
+    animation: popupFadeIn 0.3s ease-out;
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Popup hover effects */
+.professional-popup .leaflet-popup-content-wrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.dark .professional-popup .leaflet-popup-content-wrapper:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+/* Enhanced popup content styling for better readability */
+.professional-popup .leaflet-popup-content h3,
+.professional-popup .leaflet-popup-content h4 {
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.professional-popup .leaflet-popup-content p {
+    line-height: 1.5;
+}
+
+.professional-popup .leaflet-popup-content .font-mono {
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+/* Popup content spacing and borders */
+.professional-popup .leaflet-popup-content > div > div {
+    border-color: rgba(148, 163, 184, 0.2);
+}
+
+.dark .professional-popup .leaflet-popup-content > div > div {
+    border-color: rgba(51, 65, 85, 0.4);
+}
+
+/* Enhanced button styling */
+.professional-popup .leaflet-popup-content a {
+    transition: all 0.2s ease-in-out;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+}
+
+.professional-popup .leaflet-popup-content a:hover {
+    transform: translateY(-1px);
+}
+
+/* Ensure button text is black in both light and dark themes */
+.professional-popup .leaflet-popup-content a.bg-sky-600,
+.professional-popup .leaflet-popup-content a.bg-sky-500 {
+    color: #000000 !important;
+}
+
+/* Specific USGS button styling */
+.professional-popup .leaflet-popup-content .usgs-button {
+    color: #000000 !important;
+}
+
+.professional-popup .leaflet-popup-content .usgs-button:hover {
+    color: #000000 !important;
+}
+
+/* Override any Leaflet popup default styles */
+.leaflet-popup-content a.usgs-button {
+    color: #000000 !important;
+}
+
+/* Mobile optimizations for popups */
+@media (max-width: 640px) {
+    .professional-popup .leaflet-popup-content-wrapper {
+        min-width: 180px;
+        max-width: 220px;
+        transform: scale(0.5);
+        transform-origin: center bottom;
+    }
+    
+    .professional-popup .leaflet-popup-content {
+        padding: 0.75rem !important;
+        font-size: 13px;
+    }
+    
+    .professional-popup .leaflet-popup-content h3 {
+        font-size: 1rem;
+    }
+    
+    .professional-popup .leaflet-popup-content h4 {
+        font-size: 0.875rem;
+    }
+    
+    .professional-popup .leaflet-popup-content p {
+        font-size: 0.875rem;
+    }
+    
+    .professional-popup .leaflet-popup-content .text-xs {
+        font-size: 0.75rem;
+    }
+    
+    /* Compact mobile layout */
+    .professional-popup .leaflet-popup-content .mb-2 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .professional-popup .leaflet-popup-content .mb-3 {
+        margin-bottom: 0.75rem;
+    }
+    
+    .professional-popup .leaflet-popup-content .p-2 {
+        padding: 0.75rem;
+    }
+    
+    /* Scale the popup tip as well */
+    .professional-popup .leaflet-popup-tip {
+        transform: scale(0.5);
+        transform-origin: center;
+    }
+}
+
 /* Professional Popup Styling */
 .professional-popup .leaflet-popup-content-wrapper {
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     border: none;
     padding: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    transition: all 0.2s ease-in-out;
 }
 
 .professional-popup .leaflet-popup-content {
     margin: 0;
     border-radius: 12px;
     overflow: hidden;
+    color: #1e293b; /* slate-800 */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .professional-popup .leaflet-popup-tip {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
 }
 
 /* Dark mode popup adjustments */
 .dark .professional-popup .leaflet-popup-content-wrapper {
-    background: rgba(30, 41, 59, 0.95);
+    background: rgba(15, 23, 42, 0.95); /* slate-900 with transparency */
     backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.dark .professional-popup .leaflet-popup-content {
+    color: #e2e8f0; /* slate-200 */
 }
 
 .dark .professional-popup .leaflet-popup-tip {
-    background: rgba(30, 41, 59, 0.95);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(12px);
 }
 
 /* Selected Earthquake Marker */
@@ -152,7 +303,7 @@
     z-index: 9999 !important;
 }
 
-/* Container overflow fix - Gentle approach */
+/* Container overflow fix - Very gentle approach */
 .leaflet-container {
     overflow: hidden !important;
 }
@@ -174,4 +325,42 @@
 /* Ensure horizontal scrolling works */
 .leaflet-pane-container {
     overflow: visible !important;
+}
+
+/* Allow world wrapping */
+.leaflet-map-pane {
+    overflow: visible !important;
+}
+
+/* Ensure tiles can wrap horizontally */
+.leaflet-tile {
+    overflow: visible !important;
+}
+
+/* Enhanced marker styling for better visibility */
+.leaflet-overlay-pane svg path {
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Dark theme marker adjustments */
+.dark .leaflet-overlay-pane svg path {
+    filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.3));
+}
+
+/* Enhanced marker borders for better definition */
+.leaflet-overlay-pane svg path {
+    stroke-width: 2px;
+}
+
+/* Hover state for circle markers */
+.leaflet-overlay-pane svg path:hover {
+    stroke-width: 3px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+    z-index: 1000;
+}
+
+.dark .leaflet-overlay-pane svg path:hover {
+    filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.4));
 }

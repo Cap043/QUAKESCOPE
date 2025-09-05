@@ -5,7 +5,7 @@ import { Legend } from './Legend';
 import { MapControls } from './MapControls';
 import { MapThemeSelector } from './MapThemeSelector';
 import { WorldWrapHandler } from './WorldWrapHandler';
-import { MapBoundsHandler } from './MapBoundsHandler';
+import { MapIcon } from './Icons';
 import { Earthquake } from '../lib/types';
 
 export interface MapTheme {
@@ -61,9 +61,49 @@ export const MapView: React.FC<MapViewProps> = ({
         name: 'Streets',
         url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         attribution: '© OpenStreetMap contributors',
-        icon: () => <div />, // Placeholder
+        icon: MapIcon,
         description: 'Standard street map with roads and labels'
     });
+
+    // Detect mobile screen size
+    const [isMobile, setIsMobile] = useState(false);
+    const [manualThemeChange, setManualThemeChange] = useState(false);
+    
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 640);
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Auto-switch to dark theme when overall theme is dark (only if no manual theme change)
+    useEffect(() => {
+        if (!manualThemeChange) {
+            if (isDarkMode && currentTheme.id !== 'dark') {
+                setCurrentTheme({
+                    id: 'dark',
+                    name: 'Dark',
+                    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                    attribution: '© CARTO',
+                    icon: MapIcon,
+                    description: 'Dark theme for low-light environments'
+                });
+            } else if (!isDarkMode && currentTheme.id === 'dark') {
+                setCurrentTheme({
+                    id: 'streets',
+                    name: 'Streets',
+                    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    attribution: '© OpenStreetMap contributors',
+                    icon: MapIcon,
+                    description: 'Standard street map with roads and labels'
+                });
+            }
+        }
+    }, [isDarkMode, currentTheme.id, manualThemeChange]);
 
     useEffect(() => {
         // Dynamically add Leaflet's CSS to the document head
@@ -89,63 +129,50 @@ export const MapView: React.FC<MapViewProps> = ({
 
     const handleThemeChange = (theme: MapTheme) => {
         setCurrentTheme(theme);
+        setManualThemeChange(true);
     };
 
     return (
         <div className="relative h-full w-full">
-                    <MapContainer
-            center={[20, 0]}
-            zoom={2}
-            scrollWheelZoom={true}
-            style={{ height: '100%', width: '100%', backgroundColor: isDarkMode ? '#0f172a' : '#f1f5f9' }}
-            minZoom={2}
-            maxZoom={18}
-            key={`map-container-${currentTheme.id}`}
-            zoomControl={false}
-            doubleClickZoom={true}
-            trackResize={true}
-            updateWhenZooming={false}
-            updateWhenIdle={true}
-            worldCopyJump={true}
-            noWrap={false}
-            maxBounds={undefined}
-            maxBoundsViscosity={0}
-            dragging={true}
-            touchZoom={true}
-            boxZoom={false}
-            keyboard={false}
-            className="map-container-fixed"
-        >
+                                       <MapContainer
+                        center={[20, 0]}
+                        zoom={isMobile ? 1 : 2}
+                        scrollWheelZoom={true}
+                        style={{ height: '100%', width: '100%', backgroundColor: isDarkMode ? '#0f172a' : '#f1f5f9' }}
+                        minZoom={isMobile ? 1 : 2}
+                        maxZoom={18}
+                        key={`map-container-${currentTheme.id}-${isMobile ? 'mobile' : 'desktop'}`}
+                        zoomControl={false}
+                        doubleClickZoom={true}
+                        trackResize={true}
+                        worldCopyJump={true}
+                    >
             <TileLayer
                 attribution={currentTheme.attribution}
                 url={currentTheme.url}
-                updateWhenZooming={false}
-                updateWhenIdle={true}
                 keepBuffer={4}
                 maxZoom={18}
                 minZoom={2}
-                noWrap={false}
-                bounds={undefined}
             />
             
             <WorldWrapHandler />
-            <MapBoundsHandler />
             
             <QuakeMarkers
                 quakes={quakes}
                 hoveredQuakeId={hoveredQuakeId}
                 selectedQuakeId={selectedQuakeId}
+                isDarkMode={isDarkMode}
                 onQuakeSelect={onQuakeSelect}
                 onQuakeHover={onQuakeHover}
             />
             
-            <FlyToMarker position={mapFlyToCoords} zoom={6} />
+            <FlyToMarker position={mapFlyToCoords} zoom={isMobile ? 8 : 10} />
             <Legend />
             <MapControls isDarkMode={isDarkMode} />
             </MapContainer>
             
             {/* Theme Selector positioned absolutely over the map */}
-            <div className="absolute top-4 left-4 z-[1000] sm:top-4 sm:left-4">
+            <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-[1000]">
                 <MapThemeSelector
                     isDarkMode={isDarkMode}
                     onThemeChange={handleThemeChange}

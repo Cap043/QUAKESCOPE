@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AppShell } from './components/AppShell';
 import { MapView } from './components/MapView';
@@ -43,7 +43,7 @@ export default function App() {
     
     useEffect(() => {
         setSelectedQuakeId(null);
-    }, [timeRange, minMag]);
+    }, [timeRange]);
 
     // --- Handlers ---
     const handleQuakeSelect = useCallback((quakeId: string, coords: [number, number]) => {
@@ -80,7 +80,7 @@ export default function App() {
                         />
                     </div>
 
-                    <div className={`flex-grow h-full ${mobileView === 'map' ? 'block' : 'hidden'} sm:block`}>
+                    <div className={`flex-grow h-full ${mobileView === 'map' ? 'block' : 'hidden'} sm:block pb-20 sm:pb-0`}>
                         {typeof window !== 'undefined' && isReady ? (
                             <ErrorBoundary>
                                 <MapView

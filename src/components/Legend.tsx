@@ -46,7 +46,7 @@ export const Legend: React.FC = () => {
 
     return (
         <div 
-            className={`absolute bottom-4 left-4 z-[9999] p-2 sm:p-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 transition-opacity duration-500 ${
+            className={`absolute bottom-20 sm:bottom-4 left-4 z-[9999] p-2 sm:p-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 transition-opacity duration-500 ${
                 opacity === 0.3 ? 'hover:opacity-100' : ''
             }`}
             style={{ opacity }}
@@ -70,10 +70,12 @@ export const Legend: React.FC = () => {
                 <div className="flex items-center gap-1 sm:gap-2">
                     <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-orange-500"></div>
                     <span className="text-xs">4.5 - 5.9</span>
+                    <span className="hidden sm:inline text-xs">(Moderate)</span>
                 </div>
                 <div className="flex items-center gap-1 sm:gap-2">
                     <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500"></div>
                     <span className="text-xs">2.5 - 4.4</span>
+                    <span className="hidden sm:inline text-xs">(Light)</span>
                 </div>
                 <div className="flex items-center gap-1 sm:gap-2">
                     <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500"></div>

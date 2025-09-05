@@ -97,11 +97,15 @@ export const MapThemeSelector: React.FC<MapThemeSelectorProps> = ({
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 transition-all duration-200 text-sm font-medium text-slate-700 dark:text-slate-300"
+                className="flex items-center gap-2 px-2 sm:px-3 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 transition-all duration-200 text-sm font-medium text-slate-700 dark:text-slate-300 touch-manipulation"
                 title="Select Map Theme"
             >
-                <currentTheme.icon className="w-4 h-4" />
-                <span className="hidden xs:inline">{currentTheme.name}</span>
+                {currentTheme.icon ? (
+                    <currentTheme.icon className="w-4 h-4" />
+                ) : (
+                    <MapIcon className="w-4 h-4" />
+                )}
+                <span className="hidden sm:inline">{currentTheme.name || 'Select Theme'}</span>
                 <svg 
                     className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                     fill="none" 
@@ -113,18 +117,18 @@ export const MapThemeSelector: React.FC<MapThemeSelectorProps> = ({
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 top-12 w-64 sm:w-72 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-[9999] max-h-[80vh] overflow-y-auto">
+                <div className="absolute left-0 sm:right-0 top-12 w-72 sm:w-80 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-[9999] max-h-[70vh] overflow-y-auto touch-manipulation">
                     <div className="px-3 py-2 border-b border-slate-200 dark:border-slate-700">
                         <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Map Theme</h3>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Choose your preferred map style</p>
                     </div>
                     
-                    <div className="max-h-64 overflow-y-auto">
+                    <div className="max-h-56 overflow-y-auto">
                         {MAP_THEMES.map((theme) => (
                             <button
                                 key={theme.id}
                                 onClick={() => handleThemeSelect(theme)}
-                                className={`w-full text-left px-3 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors ${
+                                className={`w-full text-left px-3 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors touch-manipulation ${
                                     currentTheme.id === theme.id 
                                         ? 'bg-sky-50 dark:bg-sky-900/50 border-r-2 border-sky-500' 
                                         : ''
